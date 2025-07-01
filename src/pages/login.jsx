@@ -15,6 +15,7 @@ const Login = () => {
         const data = await res.json();
         console.log(data.message);
         console.log(data)
+        localStorage.setItem('creds', JSON.stringify(data))
       }
       else { alert(res.error) }
     } if (state === 'signup') {
