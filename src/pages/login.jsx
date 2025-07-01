@@ -9,20 +9,19 @@ const Login = () => {
   const [state, setState] = useState("login")
   const handle = async (e) => {
     if (state === 'login') {
+      console.log(name, email, password)
       e.preventDefault()
-      const res = await fetch('http://localhost:5000/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email, pass: password }) });
+      const res = await fetch('http://localhost:5000/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email, pass: password }) });
       if (res.ok) {
-        const data = await res.json();
-        console.log(data.message);
-        console.log(data)
-        localStorage.setItem('creds', JSON.stringify(data))
+        console.log(res.json())
+        localStorage.setItem('creds', JSON.stringify(res.json()))
       }
       else { alert(res.error) }
     } if (state === 'signup') {
       let uuid = uuidv4();
       e.preventDefault();
       setCreds(` username : ${name} email : ${email}`);
-      const res = await fetch('http://localhost:5000/api/users', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, email: email, uuid: uuid, pass: password }) });
+      const res = await fetch('http://localhost:5000/api/auth/signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, email: email, uuid: uuid, pass: password }) });
       if (res.ok) { alert('success user created with ' + creds) }
       else { alert(res.error) }
     }
