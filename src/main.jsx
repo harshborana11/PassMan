@@ -10,13 +10,11 @@ import './index.css';
 const root = createRoot(document.getElementById('root'));
 
 root.render(
-  <StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/login" element={<Login />} />
-      </Routes>
-    </BrowserRouter>
-  </StrictMode>
+  <BrowserRouter>
+    <Routes>
+      <Route path="/" element={<App />} />
+      <Route path="/login" element={<Login />} />
+    </Routes>
+  </BrowserRouter>
 );
 

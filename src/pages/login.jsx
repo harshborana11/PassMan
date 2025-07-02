@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Navigate, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import './login.css'
 const Login = () => {
@@ -7,14 +8,15 @@ const Login = () => {
   const [email, setEmail] = useState("")
   const [creds, setCreds] = useState("")
   const [state, setState] = useState("login")
+  const navigate = useNavigate();
   const handle = async (e) => {
     if (state === 'login') {
-      console.log(name, email, password)
       e.preventDefault()
       const res = await fetch('http://localhost:5000/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email, pass: password }) });
       if (res.ok) {
-        console.log(res.json())
-        localStorage.setItem('creds', JSON.stringify(res.json()))
+        const data = await res.json();
+        localStorage.setItem('creds', JSON.stringify(data))
+        navigate('/');
       }
       else { alert(res.error) }
     } if (state === 'signup') {
@@ -25,6 +27,11 @@ const Login = () => {
       if (res.ok) { alert('success user created with ' + creds) }
       else { alert(res.error) }
     }
+  }
+
+  const localcreds = JSON.parse(localStorage.getItem('creds') || '{}');
+  if (localcreds.uuid || localcreds.key) {
+    navigate('/');
   }
   return (
     <>

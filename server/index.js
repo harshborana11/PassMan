@@ -21,11 +21,6 @@ const pool = new Pool({
   },
 });
 
-app.get('/ping', (req, res) => {
-  console.log('✅ /ping hit');
-  res.send('pong');
-});
-// Just to confirm DB connection at startup
 try {
   const client = await pool.connect();
   console.log('✅ Connected to NeonDB successfully!');
