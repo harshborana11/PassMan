@@ -12,6 +12,11 @@ const pool = new Pool({
   },
 });
 
+const fixurl = (url) => {
+  url = url.replace(/^https?:\/\//, '');
+  url = url.replace(/\/$/, '');
+  return url;
+}
 
 const encrypt = (key, usernametext, passwordtext) => {
   const iv = crypto.randomBytes(12).toString('base64');
@@ -46,7 +51,6 @@ export const dataDecrypt = async (req, res) => {
     const result = await pool.query(
       'select data ,iv, tag from vault where uuid = $1 AND site = $2 ', [uuid, site]
     );
-
     const { data: encryptedData, iv, tag } = result.rows[0];
     const decryptedResult = await decrypt(key, encryptedData, iv, tag);
     res.status(201).json(decryptedResult);
@@ -60,7 +64,7 @@ export const sitesData = async (req, res) => {
   try {
     const { uuid } = req.body;
     const result = await pool.query(
-      'select site from vault where uuid = $1 ', [uuid]
+      'select site, created_at from vault where uuid = $1 ', [uuid]
     );
     res.status(201).json(result.rows);
   } catch (err) {
@@ -74,11 +78,12 @@ export const sitesData = async (req, res) => {
 export const dataEncrypt = async (req, res) => {
   const { site, username, password, key, uuid } = req.body;
   const data = encrypt(key, username, password)
+  const siteurl = await fixurl(site)
   res.json(data);
   try {
     const result = await pool.query(
       'insert into vault (uuid, iv, tag, site, data) values ($1, $2 , $3 , $4, $5) returning *',
-      [uuid, data.iv, data.tag, site, data.encryptedData]
+      [uuid, data.iv, data.tag, siteurl, data.encryptedData]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
