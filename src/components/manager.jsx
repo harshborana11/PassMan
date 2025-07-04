@@ -74,6 +74,7 @@ const Manager = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
+      if (shouldRedirect) return navigate('/login');
       const res = await fetch(`${API_BASE}/api/auth/checkAuth`, {
         method: 'POST',
         headers: {
