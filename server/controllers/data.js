@@ -94,7 +94,7 @@ export const dataEncrypt = async (req, res) => {
       'insert into vault (uuid, iv, tag, site, data) values ($1, $2 , $3 , $4, $5) returning *',
       [jwtData.uuid, data.iv, data.tag, siteurl, data.encryptedData]
     );
-    let info = { site: site, created_at: new Date(), iv: data.iv }
+    let info = { site: siteurl, created_at: new Date(), iv: data.iv }
     res.json(info);
   } catch (err) {
     console.log(err)
