@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import './login.css'
@@ -16,7 +16,6 @@ const Login = () => {
       if (res.ok) {
         const data = await res.json();
         localStorage.setItem('creds', JSON.stringify(data))
-        navigate('/');
       }
       else { alert(res.error) }
     } if (state === 'signup') {
@@ -28,23 +27,18 @@ const Login = () => {
       else { alert(res.error) }
     }
   }
+  useEffect(() => {
+    const localcreds = JSON.parse(localStorage.getItem('creds') || '{}');
+    if (localcreds.uuid || localcreds.key) {
+      navigate('/');
+    }
+  }, [])
 
-  const localcreds = JSON.parse(localStorage.getItem('creds') || '{}');
-  if (localcreds.uuid || localcreds.key) {
-    navigate('/');
-  }
   return (
     <>
-      <div className="absolute top-0 z-[-2] h-screen w-screen bg-neutral-950 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]"></div>
-      <div className='flex items-center w-screen h-screen justify-center'>
-        <form className=' bg-white  items-center'>
-          <br />
-          <div className=" text-5xl font-extrabold text-black w-full justify-center items-center flex">
-            <span className="text-teal-800">&lt;</span>
-            <span className="text-black">Pass</span>
-            <span className="text-teal-800">Man/</span>
-            <span className="text-teal-800">&gt;</span>
-          </div> <br />
+      <div className='flex items-center flex-col w-screen h-screen justify-center'>
+        <h1 className='text-3xl  font-bold'>passman</h1> <br />
+        <form className=' items-center'>
           {state === 'signup' ? (<><label htmlFor="name">UserName</label><input id='name' className='input' type="text" onChange={(e) => setName(e.target.value)} name="" value={name} /></>) : (<></>)}
           <label htmlFor="email">Email</label>
           <input className='input' id='email' type="email" onChange={(e) => setEmail(e.target.value)} name="" value={email} />

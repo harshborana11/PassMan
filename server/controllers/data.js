@@ -2,6 +2,7 @@ import pkg from 'pg';
 import dotenv from 'dotenv';
 import crypto from 'crypto';
 import { Buffer } from 'node:buffer';
+import jwt from 'jsonwebtoken';
 dotenv.config();
 
 const { Pool } = pkg;
@@ -11,6 +12,12 @@ const pool = new Pool({
     rejectUnauthorized: false,
   },
 });
+
+
+const decryptToken = async (token) => {
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  return decoded
+}
 
 const fixurl = (url) => {
   url = url.replace(/^https?:\/\//, '');
@@ -47,28 +54,30 @@ const decrypt = async (key, encryptedData, iv, tag) => {
 
 export const dataDecrypt = async (req, res) => {
   try {
-    const { uuid, site, key } = req.body;
+    const { token, site, iv } = req.body;
+    const jwtData = await decryptToken(token)
     const result = await pool.query(
-      'select data ,iv, tag from vault where uuid = $1 AND site = $2 ', [uuid, site]
+      'select data,tag from vault where uuid = $1 AND site = $2 AND iv = $3', [jwtData.uuid, site, iv]
     );
-    const { data: encryptedData, iv, tag } = result.rows[0];
-    const decryptedResult = await decrypt(key, encryptedData, iv, tag);
+    const { data: encryptedData, tag } = result.rows[0];
+    const decryptedResult = await decrypt(jwtData.key, encryptedData, iv, tag);
     res.status(201).json(decryptedResult);
   } catch (err) {
-    console.error('error inserting user:', err);
+    console.log(err)
     res.status(500).json({ error: 'database error' });
   }
 };
 
 export const sitesData = async (req, res) => {
   try {
-    const { uuid } = req.body;
+    const { token } = req.body;
+    const jwtData = await decryptToken(token)
     const result = await pool.query(
-      'select site, created_at from vault where uuid = $1 ', [uuid]
+      'select site, iv, created_at from vault where uuid = $1 ', [jwtData.uuid]
     );
     res.status(201).json(result.rows);
   } catch (err) {
-    console.error('error inserting user:', err);
+    console.log(err)
     res.status(500).json({ error: 'database error' });
   }
 };
@@ -76,18 +85,19 @@ export const sitesData = async (req, res) => {
 
 
 export const dataEncrypt = async (req, res) => {
-  const { site, username, password, key, uuid } = req.body;
-  const data = encrypt(key, username, password)
+  const { site, username, password, token } = req.body;
+  const jwtData = await decryptToken(token)
+  const data = encrypt(jwtData.key, username, password)
   const siteurl = await fixurl(site)
-  res.json(data);
   try {
     const result = await pool.query(
       'insert into vault (uuid, iv, tag, site, data) values ($1, $2 , $3 , $4, $5) returning *',
-      [uuid, data.iv, data.tag, siteurl, data.encryptedData]
+      [jwtData.uuid, data.iv, data.tag, siteurl, data.encryptedData]
     );
-    res.status(201).json(result.rows[0]);
+    let info = { site: site, created_at: new Date(), iv: data.iv }
+    res.json(info);
   } catch (err) {
-    console.error('error inserting user:', err);
+    console.log(err)
     res.status(500).json({ error: 'database error' });
   }
 };

@@ -42,5 +42,11 @@ const decrypt = async (key, encryptedData, iv, tag) => {
   const username = 'lorem';
   const password = 'ipsum';
   const result = await encrypt(key.toString('base64'), username, password);
+  const token = jwt.sign(
+    { uuid: user.uuid, key }, // NEVER include raw password
+    process.env.JWT_SECRET,
+    { expiresIn: '7d' }
+  );
+
   const decryptedResult = await decrypt(key.toString('base64'), result.encryptedData, result.iv.toString('base64'), result.tag.toString('base64'));
 })();

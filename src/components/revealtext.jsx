@@ -1,4 +1,5 @@
 
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useEffect, useRef, useState } from 'react';
 
 const scrambleEffect = (targetText, ref, onDone) => {
@@ -23,6 +24,7 @@ const scrambleEffect = (targetText, ref, onDone) => {
 
 const RevealOnce = ({ text = '' }) => {
   const ref = useRef();
+  const [copied, setCopied] = useState(false);
   const [prevText, setPrevText] = useState('');
 
   useEffect(() => {
@@ -30,40 +32,7 @@ const RevealOnce = ({ text = '' }) => {
     scrambleEffect(text, ref, () => setPrevText(text));
   }, [text]);
 
-  return (
-    <span
-      ref={ref}
-      style={{
-        fontFamily: 'monospace',
-        userSelect: 'none',
-        whiteSpace: 'pre',
-      }}
-    >
-      {'*'.repeat(text.length)}
-    </span>
-  );
-};
-
-const RevealOnHover = ({ text = '' }) => {
-  const ref = useRef();
-  const [revealed, setRevealed] = useState(false);
-  const [copied, setCopied] = useState(false);
-
-  const handleMouseEnter = () => {
-    if (ref.current?.textContent === text) return;
-    scrambleEffect(text, ref, () => setRevealed(true));
-  };
-
-  const handleMouseLeave = () => {
-    if (!revealed) return;
-    scrambleEffect(text, ref, () => {
-      if (ref.current) ref.current.textContent = '*'.repeat(text.length);
-      setRevealed(false);
-    }, '*'.repeat(text.length));
-  };
-
   const handleClick = async () => {
-    if (!revealed) return;
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
@@ -76,8 +45,6 @@ const RevealOnHover = ({ text = '' }) => {
   return (
     <span
       ref={ref}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
       onClick={handleClick}
       title={copied ? 'Copied!' : 'Click to copy'}
       style={{
@@ -93,5 +60,98 @@ const RevealOnHover = ({ text = '' }) => {
     </span>
   );
 };
+
+
+const RevealOnHover = ({ text = "" }) => {
+  const ref = useRef();
+  const [revealed, setRevealed] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const handleMouseEnter = () => {
+    if (isMobile || ref.current?.textContent === text) return;
+    scrambleEffect(text, ref, () => setRevealed(true));
+  };
+
+  const handleMouseLeave = () => {
+    if (isMobile || !revealed) return;
+    scrambleEffect(
+      text,
+      ref,
+      () => {
+        if (ref.current) ref.current.textContent = "*".repeat(text.length);
+        setRevealed(false);
+      },
+      "*".repeat(text.length)
+    );
+  };
+  const toggleReveal = (e) => {
+    e.stopPropagation();
+
+    if (revealed) {
+      if (ref.current) {
+        ref.current.textContent = "*".repeat(text.length);
+      }
+      setRevealed(false);
+    } else {
+      scrambleEffect(text, ref, () => setRevealed(true));
+    }
+  };
+  const handleCopy = async () => {
+    if (!revealed) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1000);
+    } catch (err) {
+      console.error("Copy failed", err);
+    }
+  };
+
+  return (
+    <div
+      onClick={handleCopy}
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        cursor: "pointer",
+        fontFamily: "monospace",
+      }}
+    >
+      <span
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        ref={ref}
+        style={{
+          flex: 1,
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          color: copied ? 'var(--color3)' : 'inherit',
+        }}
+      >
+        {"*".repeat(text.length)}
+      </span>
+      <span
+        onClick={toggleReveal}
+        style={{ marginLeft: "8px", cursor: "pointer" }}
+        title={revealed ? "Hide password" : "Show password"}
+      >
+        {revealed ? <FaEyeSlash /> : <FaEye />}
+      </span>
+    </div>
+  );
+};
+
 export { RevealOnHover, RevealOnce };
 

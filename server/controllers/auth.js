@@ -1,6 +1,7 @@
 import pkg from 'pg';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 const saltRounds = 10;
 dotenv.config();
@@ -42,9 +43,42 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
     const key = crypto.pbkdf2Sync(pass, user.uuid, 100000, 32, 'sha256');
-    res.status(200).json({ uuid: user.uuid, email: user.email, key: key, message: 'Login successful' });
+    const token = jwt.sign(
+      { uuid: user.uuid, key: key },
+      process.env.JWT_SECRET,
+      { expiresIn: '3d' }
+    );
+    res.status(200).json({ token: token });
   } catch (err) {
     console.error('Error inserting user:', err);
     res.status(500).json({ error: 'Database error' });
   }
 };
+
+
+export const checkAuth = (req, res) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ loggedIn: false });
+  }
+
+  const token = authHeader.split(' ')[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    return res.status(200).json({
+      loggedIn: true,
+      uuid: decoded.uuid,
+    });
+  } catch (err) {
+    console.error('JWT verification failed:', err.message);
+
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ loggedIn: false, reason: 'expired' });
+    }
+
+    return res.status(401).json({ loggedIn: false });
+  }
+};
+

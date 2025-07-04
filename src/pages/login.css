@@ -15,8 +15,8 @@ form {
 button {
   width: 90%;
   margin: 10px;
-  padding: 10px;
-  border: 2px solid teal;
+  height: 50px;
+  padding: 5px;
   border-radius: 20px;
 }
 
@@ -25,7 +25,8 @@ button {
 }
 
 button:hover {
-  background: teal;
+  background-color: var(--color2);
+  color: var(--color5) !important;
   transition: .5s ease-in-out;
 }
 

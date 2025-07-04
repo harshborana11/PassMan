@@ -25,12 +25,12 @@ export const themes = {
       color5: "#1a1b26"
     },
     {
-      name: "Monokai",
+      name: "Monokai Dark",
       color1: "#f8f8f2",
-      color2: "#e6db74",
-      color3: "#ae81ff",
-      color4: "#75715e",
-      color5: "#272822"
+      color2: "#75715e",
+      color3: "#414339",
+      color4: "#272822",
+      color5: "#1e1f1c"
     },
     {
       name: "One Dark",
@@ -47,6 +47,14 @@ export const themes = {
       color3: "#586e75",
       color4: "#073642",
       color5: "#002b36"
+    },
+    {
+      name: "Monochrome Dark",
+      color1: "#bfbfbf",
+      color2: "#8f8f8f",
+      color3: "#5f5f5f",
+      color4: "#2f2f2f",
+      color5: "#0f0f0f"
     }
   ],
   lightThemes: [
@@ -61,7 +69,7 @@ export const themes = {
     {
       name: "Catppuccin Frappe",
       color1: "#4c4f69",
-      color2: "#737994",
+      color2: "#595e78",
       color3: "#a6adc8",
       color4: "#b5bfe2",
       color5: "#c6d0f5"
@@ -76,21 +84,28 @@ export const themes = {
     },
     {
       name: "Gruvbox Light",
-      color1: "#a89984",
-      color2: "#bdae93",
-      color3: "#d5c4a1",
-      color4: "#ebdbb2",
+      color1: "#1d2021",
+      color2: "#3c3836",
+      color3: "#665c54",
+      color4: "#0f1011",
       color5: "#fbf1c7"
     },
     {
       name: "Nord Light",
       color1: "#4c566a",
-      color2: "#aeb4c2",
+      color2: "#8b91a3",
       color3: "#bfc5d2",
       color4: "#d8dee9",
       color5: "#e5e9f0"
-    }
-  ]
+    },
+    {
+      name: "Monochrome Light",
+      color1: "#0f0f0f",
+      color2: "#2f2f2f",
+      color3: "#bcbcbc",
+      color4: "#fefefe",
+      color5: "#fefefe"
+    }]
 }
 
 export function applyTheme(theme) {
