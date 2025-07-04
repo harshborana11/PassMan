@@ -17,6 +17,7 @@ const Login = () => {
       if (res.ok) {
         const data = await res.json();
         localStorage.setItem('creds', JSON.stringify(data))
+        navigate('/');
       }
       else { alert(res.error) }
     } if (state === 'signup') {
