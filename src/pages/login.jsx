@@ -3,6 +3,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import './login.css'
 const Login = () => {
+  const API_BASE = import.meta.env.VITE_API_URL;
   const [name, setName] = useState("")
   const [password, setPassword] = useState("")
   const [email, setEmail] = useState("")
@@ -12,7 +13,7 @@ const Login = () => {
   const handle = async (e) => {
     if (state === 'login') {
       e.preventDefault()
-      const res = await fetch('http://localhost:5000/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email, pass: password }) });
+      const res = await fetch(`${API_BASE}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email, pass: password }) });
       if (res.ok) {
         const data = await res.json();
         localStorage.setItem('creds', JSON.stringify(data))
@@ -22,7 +23,7 @@ const Login = () => {
       let uuid = uuidv4();
       e.preventDefault();
       setCreds(` username : ${name} email : ${email}`);
-      const res = await fetch('http://localhost:5000/api/auth/signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, email: email, uuid: uuid, pass: password }) });
+      const res = await fetch(`${API_BASE}/api/auth/signup`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, email: email, uuid: uuid, pass: password }) });
       if (res.ok) { alert('success user created with ' + creds) }
       else { alert(res.error) }
     }

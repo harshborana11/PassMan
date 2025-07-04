@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { RevealOnce, RevealOnHover } from "./revealtext.jsx";
 import React, { Fragment } from 'react';
 const Manager = () => {
+  const API_BASE = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const localcreds = (() => {
     try {
@@ -32,7 +33,7 @@ const Manager = () => {
   const fetchData = async () => {
     if (!localcreds) return;
     setLoading(true)
-    const res = await fetch('http://localhost:5000/api/data/sites', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: localcreds.token }) });
+    const res = await fetch(`${API_BASE}/api/data/sites`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: localcreds.token }) });
     if (res.ok) {
       const resdata = await res.json();
       setSites(resdata)
@@ -44,7 +45,7 @@ const Manager = () => {
   }
   const handleFormSubmit = async (e) => {
     e.preventDefault()
-    const res = await fetch('http://localhost:5000/api/data/encrypt', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: localcreds.token, site: entry.site, username: entry.username, password: entry.password }) });
+    const res = await fetch(`${API_BASE}/api/data/encrypt`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: localcreds.token, site: entry.site, username: entry.username, password: entry.password }) });
     if (res.ok) {
       const resdata = await res.json();
       console.log(resdata)
@@ -59,7 +60,7 @@ const Manager = () => {
   }
   const handleRender = async (site, iv) => {
     setFormtoggle(false)
-    const res = await fetch('http://localhost:5000/api/data/decrypt', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: localcreds.token, site: site, iv: iv }) });
+    const res = await fetch(`${API_BASE}/api/data/decrypt`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: localcreds.token, site: site, iv: iv }) });
     if (res.ok) {
       const decryptedDataRaw = await res.json()
       const decryptedData = JSON.parse(decryptedDataRaw)
@@ -73,7 +74,7 @@ const Manager = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const res = await fetch('http://localhost:5000/api/auth/checkAuth', {
+      const res = await fetch(`${API_BASE}/api/auth/checkAuth`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${localcreds.token}`,
