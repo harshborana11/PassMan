@@ -131,6 +131,7 @@ const RevealOnHover = ({ text = "" }) => {
       <span
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        className="text"
         ref={ref}
         style={{
           flex: 1,
@@ -143,6 +144,7 @@ const RevealOnHover = ({ text = "" }) => {
         {"*".repeat(text.length)}
       </span>
       <span
+        className="text"
         onClick={toggleReveal}
         style={{ marginLeft: "8px", cursor: "pointer" }}
         title={revealed ? "Hide password" : "Show password"}

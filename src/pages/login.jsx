@@ -70,7 +70,7 @@ const Login = () => {
   }
   useEffect(() => {
     const localcreds = JSON.parse(localStorage.getItem('creds') || '{}');
-    if (localcreds.uuid || localcreds.key) {
+    if (localcreds.token) {
       navigate('/');
     }
   }, [])

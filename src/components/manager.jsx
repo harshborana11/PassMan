@@ -181,7 +181,7 @@ const Manager = () => {
             </form> </>) : (<></>)}
           </div >
           {!formtoggle && (<div className="w-[100%] gap-6 text-xl rounded-l flex flex-col justify-around">
-            <h1 className="text-2xl"><RevealOnce text={displayData.site} /></h1>
+            <h1 className="text-xl"><RevealOnce text={displayData.site} /></h1>
             <div className="usrpassbox">
               <div className=" r1">
                 <span className="gap-3 flex"><IoPerson /> :<h2><RevealOnce text={displayData.username} /></h2></span>
