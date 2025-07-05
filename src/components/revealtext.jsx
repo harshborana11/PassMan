@@ -116,7 +116,7 @@ const RevealOnHover = ({ text = "" }) => {
   };
 
   return (
-    <div
+    <div className='text-2xl'
       onClick={handleCopy}
       style={{
         width: "100%",

@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
+import { ErrorsOnLogin, ErrorsOnSignup } from '../utils/errors.js';
 const saltRounds = 10;
 dotenv.config();
 
@@ -25,8 +26,9 @@ export const signup = async (req, res) => {
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
-    console.error('Error inserting user:', err);
-    res.status(500).json({ error: 'Database error' });
+    console.log(err)
+    const responce = ErrorsOnSignup(err)
+    res.status(responce.error).json({ error: responce.error, message: responce.message });
   }
 };
 
@@ -50,8 +52,9 @@ export const login = async (req, res) => {
     );
     res.status(200).json({ token: token });
   } catch (err) {
-    console.error('Error inserting user:', err);
-    res.status(500).json({ error: 'Database error' });
+    console.log(err.code)
+    const responce = ErrorsOnLogin(err)
+    res.status(responce.error).json({ error: responce.error, message: responce.message });
   }
 };
 

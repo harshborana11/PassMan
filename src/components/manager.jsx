@@ -48,7 +48,6 @@ const Manager = () => {
     const res = await fetch(`${API_BASE}/api/data/encrypt`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: localcreds.token, site: entry.site, username: entry.username, password: entry.password }) });
     if (res.ok) {
       const resdata = await res.json();
-      console.log(resdata)
       setSites(prev => [
         ...prev,
         {
@@ -57,9 +56,13 @@ const Manager = () => {
           created_at: filterDate(resdata.created_at)
         }])
     }
+    setShowSection(false)
+    setFormtoggle(false)
   }
   const handleRender = async (site, iv) => {
     setFormtoggle(false)
+    let data = displayData
+    setDisplayData({ site: 'loading site data...', username: data.username, password: data.password })
     const res = await fetch(`${API_BASE}/api/data/decrypt`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: localcreds.token, site: site, iv: iv }) });
     if (res.ok) {
       const decryptedDataRaw = await res.json()
