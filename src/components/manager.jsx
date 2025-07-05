@@ -33,7 +33,7 @@ const Manager = () => {
   const fetchData = async () => {
     if (!localcreds) return;
     setLoading(true)
-    const res = await fetch(`${API_BASE}/api/data/sites`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: localcreds.token }) });
+    const res = await fetch(`${API_BASE}/api/data/sites`, { method: 'POST', headers: { Authorization: `Bearer ${localcreds.token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ token: localcreds.token }) });
     if (res.ok) {
       const resdata = await res.json();
       setSites(resdata)
@@ -45,7 +45,7 @@ const Manager = () => {
   }
   const handleFormSubmit = async (e) => {
     e.preventDefault()
-    const res = await fetch(`${API_BASE}/api/data/encrypt`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: localcreds.token, site: entry.site, username: entry.username, password: entry.password }) });
+    const res = await fetch(`${API_BASE}/api/data/encrypt`, { method: 'POST', headers: { Authorization: `Bearer ${localcreds.token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ token: localcreds.token, site: entry.site, username: entry.username, password: entry.password }) });
     if (res.ok) {
       const resdata = await res.json();
       setSites(prev => [
@@ -63,7 +63,7 @@ const Manager = () => {
     setFormtoggle(false)
     let data = displayData
     setDisplayData({ site: 'loading site data...', username: data.username, password: data.password })
-    const res = await fetch(`${API_BASE}/api/data/decrypt`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: localcreds.token, site: site, iv: iv }) });
+    const res = await fetch(`${API_BASE}/api/data/decrypt`, { method: 'POST', headers: { Authorization: `Bearer ${localcreds.token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ token: localcreds.token, site: site, iv: iv }) });
     if (res.ok) {
       const decryptedDataRaw = await res.json()
       const decryptedData = JSON.parse(decryptedDataRaw)
